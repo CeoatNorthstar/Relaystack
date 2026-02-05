@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "requestId": "req_89e325b74aeb4c118490e0d7a374406d",
+    "apiKeyId": "test-key",
+    "provider": "unknown",
+    "model": "gpt-4o-mini",
+    "startTime": 1770255762687,
+    "endTime": 1770255763013,
+    "latencyMs": 326,
+    "cached": false,
+    "fallbackUsed": false,
+    "statusCode": 502,
+    "errorMessage": "No API key configured for provider: cohere. Please add your API key at POST /v1/credentials",
+    "ipAddress": "127.0.0.1",
+    "userAgent": "curl/8.7.1"
+  },
+  "request": {
+    "model": "gpt-4o-mini",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello"
+      }
+    ]
+  },
+  "timestamp": "2026-02-05T01:42:43.014Z"
+}

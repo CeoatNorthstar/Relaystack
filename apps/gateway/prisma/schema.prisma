@@ -1,0 +1,344 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== USER & AUTH ====================
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String?
+  name          String?
+  avatarUrl     String?
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  memberships   OrganizationMember[]
+  sessions      Session[]
+  invitesSent   Invite[]             @relation("InviteSender")
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+}
+
+model PasswordReset {
+  id        String    @id @default(cuid())
+  email     String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model EmailVerification {
+  id        String    @id @default(cuid())
+  email     String
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
+// ==================== ORGANIZATION ====================
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  logoUrl   String?
+  plan      Plan     @default(FREE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members   OrganizationMember[]
+  projects  Project[]
+  invites   Invite[]
+  billing   Billing?
+  usageLogs UsageLog[]
+}
+
+model OrganizationMember {
+  id             String       @id @default(cuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role           OrgRole      @default(MEMBER)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([userId, organizationId])
+}
+
+model Invite {
+  id             String       @id @default(cuid())
+  email          String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  role           OrgRole      @default(MEMBER)
+  token          String       @unique
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  invitedById    String
+  invitedBy      User         @relation("InviteSender", fields: [invitedById], references: [id])
+  createdAt      DateTime     @default(now())
+}
+
+enum OrgRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+enum Plan {
+  FREE
+  STARTER
+  GROWTH
+  ENTERPRISE
+}
+
+// Plan limits configuration (stored in code, not DB)
+// FREE: 50,000/month, 60/min, 7-day logs, 1 project
+// STARTER: 500,000/month, 60/min, 30-day logs, 3 projects
+// GROWTH: 5,000,000/month, 60/min, 90-day logs, 10 projects
+// ENTERPRISE: 25,000,000/month, 60/min, 365-day logs, unlimited
+
+// ==================== PROJECT & ENVIRONMENT ====================
+
+model Project {
+  id             String        @id @default(cuid())
+  name           String
+  slug           String
+  description    String?
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  environments   Environment[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@unique([organizationId, slug])
+}
+
+model Environment {
+  id         String      @id @default(cuid())
+  name       String
+  slug       String
+  projectId  String
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  apiKeys    ApiKey[]
+  routes     Route[]
+  rateLimits RateLimit[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@unique([projectId, slug])
+}
+
+// ==================== API KEYS ====================
+
+model ApiKey {
+  id            String      @id @default(cuid())
+  key           String      @unique
+  keyHash       String      @unique
+  keyPreview    String
+  name          String?
+  environmentId String
+  environment   Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  permissions   String[]    @default([])
+  rateLimit     Int?
+  expiresAt     DateTime?
+  lastUsedAt    DateTime?
+  revokedAt     DateTime?
+  requests      Request[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+// ==================== ROUTES & PROVIDERS ====================
+
+model Route {
+  id            String      @id @default(cuid())
+  path          String
+  method        String
+  description   String?
+  environmentId String
+  environment   Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  providerId    String?
+  provider      Provider?   @relation(fields: [providerId], references: [id])
+  requests      Request[]
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([environmentId, path, method])
+}
+
+model Provider {
+  id          String               @id @default(cuid())
+  name        String
+  slug        String               @unique
+  baseUrl     String
+  authType    String
+  isActive    Boolean              @default(true)
+  routes      Route[]
+  models      Model[]
+  credentials ProviderCredential[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+
+model ProviderCredential {
+  id             String   @id @default(cuid())
+  providerId     String
+  provider       Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  organizationId String?
+  apiKey         String
+  isDefault      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Model {
+  id               String   @id @default(cuid())
+  name             String
+  slug             String
+  providerId       String
+  provider         Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  inputPricePer1k  Decimal? @db.Decimal(10, 6)
+  outputPricePer1k Decimal? @db.Decimal(10, 6)
+  contextWindow    Int?
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([providerId, slug])
+}
+
+// ==================== REQUESTS & LOGGING ====================
+
+model Request {
+  id           String   @id @default(cuid())
+  apiKeyId     String?
+  apiKey       ApiKey?  @relation(fields: [apiKeyId], references: [id])
+  routeId      String?
+  route        Route?   @relation(fields: [routeId], references: [id])
+  method       String
+  path         String
+  statusCode   Int
+  latencyMs    Int
+  inputTokens  Int?
+  outputTokens Int?
+  totalTokens  Int?
+  model        String?
+  provider     String?
+  cost         Decimal? @db.Decimal(10, 6)
+  errorMessage String?
+  ipAddress    String?
+  userAgent    String?
+  requestBody  Json?
+  responseBody Json?
+  createdAt    DateTime @default(now())
+
+  @@index([apiKeyId, createdAt])
+  @@index([createdAt])
+}
+
+// ==================== RATE LIMITING ====================
+
+model RateLimit {
+  id            String      @id @default(cuid())
+  environmentId String
+  environment   Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  name          String
+  windowMs      Int
+  maxRequests   Int
+  isActive      Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+// ==================== BILLING & USAGE ====================
+
+model Billing {
+  id                 String       @id @default(cuid())
+  organizationId     String       @unique
+  organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  stripeCustomerId   String?      @unique
+  subscriptionId     String?
+  subscriptionStatus String?
+  currentPeriodStart DateTime?
+  currentPeriodEnd   DateTime?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+}
+
+model UsageLog {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  periodStart    DateTime
+  periodEnd      DateTime
+  totalRequests  Int          @default(0)
+  totalTokens    Int          @default(0)
+  totalCost      Decimal      @default(0) @db.Decimal(10, 6)
+  createdAt      DateTime     @default(now())
+
+  @@unique([organizationId, periodStart])
+}
+
+// ==================== WEBHOOKS & INTEGRATIONS ====================
+
+model Webhook {
+  id              String    @id @default(cuid())
+  organizationId  String
+  url             String
+  secret          String
+  events          String[]
+  isActive        Boolean   @default(true)
+  lastTriggeredAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model AuditLog {
+  id             String   @id @default(cuid())
+  organizationId String?
+  userId         String?
+  action         String
+  targetType     String?
+  targetId       String?
+  metadata       Json?
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+}

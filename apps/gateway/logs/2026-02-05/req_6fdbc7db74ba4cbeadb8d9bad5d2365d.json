@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "requestId": "req_6fdbc7db74ba4cbeadb8d9bad5d2365d",
+    "apiKeyId": "test-key",
+    "provider": "unknown",
+    "model": "gpt-4o",
+    "startTime": 1770255397590,
+    "endTime": 1770255397596,
+    "latencyMs": 6,
+    "cached": false,
+    "fallbackUsed": false,
+    "statusCode": 502,
+    "errorMessage": "No API key available for provider: cohere",
+    "ipAddress": "127.0.0.1",
+    "userAgent": "curl/8.7.1"
+  },
+  "request": {
+    "model": "gpt-4o",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello"
+      }
+    ]
+  },
+  "timestamp": "2026-02-05T01:36:37.598Z"
+}

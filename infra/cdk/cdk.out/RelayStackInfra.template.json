@@ -1,0 +1,1129 @@
+{
+ "Description": "RelayStack AI Gateway Infrastructure - Cognito, RDS, ElastiCache, S3",
+ "Resources": {
+  "RelayStackVpcAF1A8530": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RelayStackInfra/RelayStackVpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/Resource"
+   }
+  },
+  "RelayStackVpcPublicSubnet1Subnet1CDFA9A9": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-2a",
+    "CidrBlock": "10.0.0.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "RelayStackInfra/RelayStackVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "RelayStackVpcAF1A8530"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PublicSubnet1/Subnet"
+   }
+  },
+  "RelayStackVpcPublicSubnet1RouteTable165088C0": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RelayStackInfra/RelayStackVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "RelayStackVpcAF1A8530"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PublicSubnet1/RouteTable"
+   }
+  },
+  "RelayStackVpcPublicSubnet1RouteTableAssociationEB78FE7B": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "RelayStackVpcPublicSubnet1RouteTable165088C0"
+    },
+    "SubnetId": {
+     "Ref": "RelayStackVpcPublicSubnet1Subnet1CDFA9A9"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PublicSubnet1/RouteTableAssociation"
+   }
+  },
+  "RelayStackVpcPublicSubnet1DefaultRoute608182DC": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "RelayStackVpcIGWDB6CBCA4"
+    },
+    "RouteTableId": {
+     "Ref": "RelayStackVpcPublicSubnet1RouteTable165088C0"
+    }
+   },
+   "DependsOn": [
+    "RelayStackVpcVPCGWFBE42D63"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PublicSubnet1/DefaultRoute"
+   }
+  },
+  "RelayStackVpcPublicSubnet1EIP1A7CEB53": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RelayStackInfra/RelayStackVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PublicSubnet1/EIP"
+   }
+  },
+  "RelayStackVpcPublicSubnet1NATGateway5401E8FF": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "RelayStackVpcPublicSubnet1EIP1A7CEB53",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "RelayStackVpcPublicSubnet1Subnet1CDFA9A9"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RelayStackInfra/RelayStackVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "RelayStackVpcPublicSubnet1DefaultRoute608182DC",
+    "RelayStackVpcPublicSubnet1RouteTableAssociationEB78FE7B"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PublicSubnet1/NATGateway"
+   }
+  },
+  "RelayStackVpcPublicSubnet2Subnet0437F672": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-2b",
+    "CidrBlock": "10.0.1.0/24",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "RelayStackInfra/RelayStackVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "RelayStackVpcAF1A8530"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PublicSubnet2/Subnet"
+   }
+  },
+  "RelayStackVpcPublicSubnet2RouteTableF9C4C57B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RelayStackInfra/RelayStackVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "RelayStackVpcAF1A8530"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PublicSubnet2/RouteTable"
+   }
+  },
+  "RelayStackVpcPublicSubnet2RouteTableAssociation8727E217": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "RelayStackVpcPublicSubnet2RouteTableF9C4C57B"
+    },
+    "SubnetId": {
+     "Ref": "RelayStackVpcPublicSubnet2Subnet0437F672"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PublicSubnet2/RouteTableAssociation"
+   }
+  },
+  "RelayStackVpcPublicSubnet2DefaultRoute2D339023": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "RelayStackVpcIGWDB6CBCA4"
+    },
+    "RouteTableId": {
+     "Ref": "RelayStackVpcPublicSubnet2RouteTableF9C4C57B"
+    }
+   },
+   "DependsOn": [
+    "RelayStackVpcVPCGWFBE42D63"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PublicSubnet2/DefaultRoute"
+   }
+  },
+  "RelayStackVpcPrivateSubnet1SubnetD37DA11D": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-2a",
+    "CidrBlock": "10.0.2.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "RelayStackInfra/RelayStackVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "RelayStackVpcAF1A8530"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PrivateSubnet1/Subnet"
+   }
+  },
+  "RelayStackVpcPrivateSubnet1RouteTable6C90AB29": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RelayStackInfra/RelayStackVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "RelayStackVpcAF1A8530"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PrivateSubnet1/RouteTable"
+   }
+  },
+  "RelayStackVpcPrivateSubnet1RouteTableAssociationBDE9C869": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "RelayStackVpcPrivateSubnet1RouteTable6C90AB29"
+    },
+    "SubnetId": {
+     "Ref": "RelayStackVpcPrivateSubnet1SubnetD37DA11D"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PrivateSubnet1/RouteTableAssociation"
+   }
+  },
+  "RelayStackVpcPrivateSubnet1DefaultRoute69C9385D": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "RelayStackVpcPublicSubnet1NATGateway5401E8FF"
+    },
+    "RouteTableId": {
+     "Ref": "RelayStackVpcPrivateSubnet1RouteTable6C90AB29"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PrivateSubnet1/DefaultRoute"
+   }
+  },
+  "RelayStackVpcPrivateSubnet2Subnet943561E3": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-east-2b",
+    "CidrBlock": "10.0.3.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "RelayStackInfra/RelayStackVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "RelayStackVpcAF1A8530"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PrivateSubnet2/Subnet"
+   }
+  },
+  "RelayStackVpcPrivateSubnet2RouteTable33DBCE8B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RelayStackInfra/RelayStackVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "RelayStackVpcAF1A8530"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PrivateSubnet2/RouteTable"
+   }
+  },
+  "RelayStackVpcPrivateSubnet2RouteTableAssociation8083B9B9": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "RelayStackVpcPrivateSubnet2RouteTable33DBCE8B"
+    },
+    "SubnetId": {
+     "Ref": "RelayStackVpcPrivateSubnet2Subnet943561E3"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PrivateSubnet2/RouteTableAssociation"
+   }
+  },
+  "RelayStackVpcPrivateSubnet2DefaultRoute7DF841C6": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "RelayStackVpcPublicSubnet1NATGateway5401E8FF"
+    },
+    "RouteTableId": {
+     "Ref": "RelayStackVpcPrivateSubnet2RouteTable33DBCE8B"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/PrivateSubnet2/DefaultRoute"
+   }
+  },
+  "RelayStackVpcIGWDB6CBCA4": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "RelayStackInfra/RelayStackVpc"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/IGW"
+   }
+  },
+  "RelayStackVpcVPCGWFBE42D63": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "RelayStackVpcIGWDB6CBCA4"
+    },
+    "VpcId": {
+     "Ref": "RelayStackVpcAF1A8530"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackVpc/VPCGW"
+   }
+  },
+  "RelayStackUserPool29993727": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_email",
+       "Priority": 1
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": false
+    },
+    "AutoVerifiedAttributes": [
+     "email"
+    ],
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "Policies": {
+     "PasswordPolicy": {
+      "MinimumLength": 8,
+      "RequireLowercase": true,
+      "RequireNumbers": true,
+      "RequireSymbols": false,
+      "RequireUppercase": true
+     }
+    },
+    "Schema": [
+     {
+      "Mutable": true,
+      "Name": "email",
+      "Required": true
+     },
+     {
+      "Mutable": true,
+      "Name": "name",
+      "Required": true
+     }
+    ],
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UserPoolName": "relaystack-users",
+    "UsernameAttributes": [
+     "email"
+    ],
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackUserPool/Resource"
+   }
+  },
+  "RelayStackUserPoolRelayStackDomain355C91E5": {
+   "Type": "AWS::Cognito::UserPoolDomain",
+   "Properties": {
+    "Domain": {
+     "Fn::Join": [
+      "",
+      [
+       "relaystack-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "UserPoolId": {
+     "Ref": "RelayStackUserPool29993727"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackUserPool/RelayStackDomain/Resource"
+   }
+  },
+  "RelayStackUserPoolDashboardClientEF8B72B0": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AccessTokenValidity": 60,
+    "AllowedOAuthFlows": [
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "email",
+     "openid",
+     "profile"
+    ],
+    "CallbackURLs": [
+     "http://localhost:3000/auth/callback",
+     "https://dashboard.relaystack.io/auth/callback"
+    ],
+    "ClientName": "relaystack-dashboard",
+    "ExplicitAuthFlows": [
+     "ALLOW_USER_PASSWORD_AUTH",
+     "ALLOW_USER_SRP_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
+    "GenerateSecret": false,
+    "IdTokenValidity": 60,
+    "LogoutURLs": [
+     "http://localhost:3000",
+     "https://dashboard.relaystack.io"
+    ],
+    "RefreshTokenValidity": 43200,
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "TokenValidityUnits": {
+     "AccessToken": "minutes",
+     "IdToken": "minutes",
+     "RefreshToken": "minutes"
+    },
+    "UserPoolId": {
+     "Ref": "RelayStackUserPool29993727"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackUserPool/DashboardClient/Resource"
+   }
+  },
+  "DbSecurityGroupE9D701AD": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for RDS PostgreSQL",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "RelayStackVpcAF1A8530",
+        "CidrBlock"
+       ]
+      },
+      "Description": "Allow PostgreSQL from VPC",
+      "FromPort": 5432,
+      "IpProtocol": "tcp",
+      "ToPort": 5432
+     }
+    ],
+    "VpcId": {
+     "Ref": "RelayStackVpcAF1A8530"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/DbSecurityGroup/Resource"
+   }
+  },
+  "DbCredentials798065DE": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "RelayStack RDS PostgreSQL credentials",
+    "GenerateSecretString": {
+     "ExcludePunctuation": true,
+     "GenerateStringKey": "password",
+     "PasswordLength": 32,
+     "SecretStringTemplate": "{\"username\":\"relaystack\"}"
+    },
+    "Name": "relaystack/db-credentials"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/DbCredentials/Resource"
+   }
+  },
+  "DbCredentialsAttachmentD2151D4F": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "DbCredentials798065DE"
+    },
+    "TargetId": {
+     "Ref": "RelayStackDb1FC49FBE"
+    },
+    "TargetType": "AWS::RDS::DBInstance"
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/DbCredentials/Attachment/Resource"
+   }
+  },
+  "RelayStackDbSubnetGroup1C817676": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnet group for RelayStackDb database",
+    "SubnetIds": [
+     {
+      "Ref": "RelayStackVpcPrivateSubnet1SubnetD37DA11D"
+     },
+     {
+      "Ref": "RelayStackVpcPrivateSubnet2Subnet943561E3"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackDb/SubnetGroup/Default"
+   }
+  },
+  "RelayStackDb1FC49FBE": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "AllocatedStorage": "20",
+    "AutoMinorVersionUpgrade": true,
+    "BackupRetentionPeriod": 7,
+    "CopyTagsToSnapshot": true,
+    "DBInstanceClass": "db.t3.micro",
+    "DBName": "relaystack",
+    "DBSubnetGroupName": {
+     "Ref": "RelayStackDbSubnetGroup1C817676"
+    },
+    "DeletionProtection": false,
+    "Engine": "postgres",
+    "EngineVersion": "16",
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "DbCredentials798065DE"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "DbCredentials798065DE"
+       },
+       ":SecretString:username::}}"
+      ]
+     ]
+    },
+    "MaxAllocatedStorage": 100,
+    "MultiAZ": false,
+    "PubliclyAccessible": false,
+    "StorageEncrypted": true,
+    "StorageType": "gp2",
+    "VPCSecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "DbSecurityGroupE9D701AD",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Snapshot",
+   "DeletionPolicy": "Snapshot",
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackDb/Resource"
+   }
+  },
+  "RedisSecurityGroupB05951F6": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Security group for ElastiCache Redis",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": {
+       "Fn::GetAtt": [
+        "RelayStackVpcAF1A8530",
+        "CidrBlock"
+       ]
+      },
+      "Description": "Allow Redis from VPC",
+      "FromPort": 6379,
+      "IpProtocol": "tcp",
+      "ToPort": 6379
+     }
+    ],
+    "VpcId": {
+     "Ref": "RelayStackVpcAF1A8530"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RedisSecurityGroup/Resource"
+   }
+  },
+  "RedisSubnetGroup": {
+   "Type": "AWS::ElastiCache::SubnetGroup",
+   "Properties": {
+    "CacheSubnetGroupName": "relaystack-redis-subnet",
+    "Description": "Subnet group for RelayStack Redis",
+    "SubnetIds": [
+     {
+      "Ref": "RelayStackVpcPrivateSubnet1SubnetD37DA11D"
+     },
+     {
+      "Ref": "RelayStackVpcPrivateSubnet2Subnet943561E3"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RedisSubnetGroup"
+   }
+  },
+  "RelayStackRedis": {
+   "Type": "AWS::ElastiCache::CacheCluster",
+   "Properties": {
+    "AutoMinorVersionUpgrade": true,
+    "CacheNodeType": "cache.t3.micro",
+    "CacheSubnetGroupName": "relaystack-redis-subnet",
+    "ClusterName": "relaystack-redis",
+    "Engine": "redis",
+    "EngineVersion": "7.0",
+    "NumCacheNodes": 1,
+    "Port": 6379,
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "RedisSecurityGroupB05951F6",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "RedisSubnetGroup"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackRedis"
+   }
+  },
+  "LogsBucket9C4D8843": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "relaystack-logs-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "ExpirationInDays": 365,
+       "Id": "DeleteOldLogs",
+       "Status": "Enabled",
+       "Transitions": [
+        {
+         "StorageClass": "INTELLIGENT_TIERING",
+         "TransitionInDays": 30
+        }
+       ]
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/LogsBucket/Resource"
+   }
+  },
+  "ExportsBucket5A12738B": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": {
+     "Fn::Join": [
+      "",
+      [
+       "relaystack-exports-",
+       {
+        "Ref": "AWS::AccountId"
+       }
+      ]
+     ]
+    },
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "ExpirationInDays": 7,
+       "Id": "DeleteOldExports",
+       "Status": "Enabled"
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/ExportsBucket/Resource"
+   }
+  },
+  "ExportsBucketPolicyF65C412E": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "ExportsBucket5A12738B"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:PutBucketPolicy",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:DeleteObject*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ExportsBucket5A12738B",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ExportsBucket5A12738B",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/ExportsBucket/Policy/Resource"
+   }
+  },
+  "ExportsBucketAutoDeleteObjectsCustomResource12EF524C": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "ExportsBucket5A12738B"
+    }
+   },
+   "DependsOn": [
+    "ExportsBucketPolicyF65C412E"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/ExportsBucket/AutoDeleteObjectsCustomResource/Default"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-456735831533-us-east-2",
+     "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "ExportsBucket5A12738B"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+    "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
+    "aws:asset:property": "Code"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3VRXW+CMBT9LXuv3cQle1ZcjC8bEefrcilXrJbW9N5qDOG/LwgC2bKne77anraRjGZvcvoEV5qo/DQxOpNVyqBOAq70XaGKZLU7KxHv7S6JRRIyo1UaMovcaAPauMC4hczgoA/anMgpDayd7cMNeF8nzfgAXgHjFW4i8foCjMPGa8voLfaBtknH5sygDiVaFimq4DXfVt6F873DWKiFcoXV7GT1RegT50yT6fEDLF0J2o6tTnnQ2OjmtFGgVWpBqDwylWChQC+r9M67Jg1qxxZ8gTwq3gd+O7XwOclqCQwZEK4tMViFon2b/p7LxR/hEa0FGiDWCtQBZdV/TB+NGyM2gRh9LWgmq0VQp7Z1h9qROKPVbZBbXtdig+SCVyjiQOzKge7tP1bi3UXn6BdAKOZEyClDoW3RrPkMfA5cC+tylEd6vkSvcjqTL09H0nrig2Vdoty08wfun7QzvgIAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "UserPoolId": {
+   "Description": "Cognito User Pool ID",
+   "Value": {
+    "Ref": "RelayStackUserPool29993727"
+   },
+   "Export": {
+    "Name": "RelayStackUserPoolId"
+   }
+  },
+  "UserPoolClientId": {
+   "Description": "Cognito User Pool Client ID",
+   "Value": {
+    "Ref": "RelayStackUserPoolDashboardClientEF8B72B0"
+   },
+   "Export": {
+    "Name": "RelayStackUserPoolClientId"
+   }
+  },
+  "CognitoDomain": {
+   "Description": "Cognito Hosted UI Domain",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "RelayStackUserPoolRelayStackDomain355C91E5"
+      },
+      ".auth.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".amazoncognito.com"
+     ]
+    ]
+   },
+   "Export": {
+    "Name": "RelayStackCognitoDomain"
+   }
+  },
+  "RdsEndpoint": {
+   "Description": "RDS PostgreSQL Endpoint",
+   "Value": {
+    "Fn::GetAtt": [
+     "RelayStackDb1FC49FBE",
+     "Endpoint.Address"
+    ]
+   },
+   "Export": {
+    "Name": "RelayStackRdsEndpoint"
+   }
+  },
+  "RdsSecretArn": {
+   "Description": "RDS Credentials Secret ARN",
+   "Value": {
+    "Ref": "DbCredentials798065DE"
+   },
+   "Export": {
+    "Name": "RelayStackRdsSecretArn"
+   }
+  },
+  "RedisEndpoint": {
+   "Description": "ElastiCache Redis Endpoint",
+   "Value": {
+    "Fn::GetAtt": [
+     "RelayStackRedis",
+     "RedisEndpoint.Address"
+    ]
+   },
+   "Export": {
+    "Name": "RelayStackRedisEndpoint"
+   }
+  },
+  "LogsBucketName": {
+   "Description": "S3 Logs Bucket Name",
+   "Value": {
+    "Ref": "LogsBucket9C4D8843"
+   },
+   "Export": {
+    "Name": "RelayStackLogsBucket"
+   }
+  },
+  "ExportsBucketName": {
+   "Description": "S3 Exports Bucket Name",
+   "Value": {
+    "Ref": "ExportsBucket5A12738B"
+   },
+   "Export": {
+    "Name": "RelayStackExportsBucket"
+   }
+  },
+  "VpcId": {
+   "Description": "VPC ID",
+   "Value": {
+    "Ref": "RelayStackVpcAF1A8530"
+   },
+   "Export": {
+    "Name": "RelayStackVpcId"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

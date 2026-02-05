@@ -1,0 +1,53 @@
+{
+  "name": "relaystack",
+  "version": "0.1.0",
+  "description": "RelayStack SDK - Unified AI Gateway for OpenAI, Anthropic, Google, and more",
+  "author": "RelayStack",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc",
+    "test": "tsx test/test-sdk.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "ai",
+    "gateway",
+    "openai",
+    "anthropic",
+    "claude",
+    "gpt",
+    "gemini",
+    "llm",
+    "chatgpt",
+    "api",
+    "proxy",
+    "routing",
+    "fallback"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/relaystack/relaystack"
+  },
+  "homepage": "https://relaystack.io",
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.19.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

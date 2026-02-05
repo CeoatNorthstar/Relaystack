@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "requestId": "req_3c17fc74d046401c9e3e5393a619d21b",
+    "apiKeyId": "test-key",
+    "provider": "unknown",
+    "model": "gpt-4o-mini",
+    "startTime": 1770255804043,
+    "endTime": 1770255804303,
+    "latencyMs": 260,
+    "cached": false,
+    "fallbackUsed": false,
+    "statusCode": 502,
+    "errorMessage": "OpenAI API error: 401 - Incorrect API key provided: sk-test-********************-123. You can find your API key at https://platform.openai.com/account/api-keys.",
+    "ipAddress": "127.0.0.1",
+    "userAgent": "curl/8.7.1"
+  },
+  "request": {
+    "model": "gpt-4o-mini",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello"
+      }
+    ]
+  },
+  "timestamp": "2026-02-05T01:43:24.311Z"
+}

@@ -1,0 +1,27 @@
+{
+  "metadata": {
+    "requestId": "req_29358487420548cbb526287aaae89dc0",
+    "apiKeyId": "test-key",
+    "provider": "unknown",
+    "model": "gpt-4o-mini",
+    "startTime": 1770257292069,
+    "endTime": 1770257292095,
+    "latencyMs": 26,
+    "cached": false,
+    "fallbackUsed": false,
+    "statusCode": 502,
+    "errorMessage": "No API key configured for provider: openai. Please add your API key at POST /v1/credentials",
+    "ipAddress": "127.0.0.1",
+    "userAgent": "curl/8.7.1"
+  },
+  "request": {
+    "model": "gpt-4o-mini",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Hello"
+      }
+    ]
+  },
+  "timestamp": "2026-02-05T02:08:12.099Z"
+}
