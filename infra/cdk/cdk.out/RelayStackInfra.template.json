@@ -391,130 +391,82 @@
     "aws:cdk:path": "RelayStackInfra/RelayStackVpc/VPCGW"
    }
   },
-  "RelayStackUserPool29993727": {
-   "Type": "AWS::Cognito::UserPool",
+  "AlbSecurityGroup86A59E99": {
+   "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "AccountRecoverySetting": {
-     "RecoveryMechanisms": [
-      {
-       "Name": "verified_email",
-       "Priority": 1
-      }
-     ]
-    },
-    "AdminCreateUserConfig": {
-     "AllowAdminCreateUserOnly": false
-    },
-    "AutoVerifiedAttributes": [
-     "email"
-    ],
-    "EmailVerificationMessage": "The verification code to your new account is {####}",
-    "EmailVerificationSubject": "Verify your new account",
-    "Policies": {
-     "PasswordPolicy": {
-      "MinimumLength": 8,
-      "RequireLowercase": true,
-      "RequireNumbers": true,
-      "RequireSymbols": false,
-      "RequireUppercase": true
-     }
-    },
-    "Schema": [
+    "GroupDescription": "Security group for Application Load Balancer",
+    "SecurityGroupEgress": [
      {
-      "Mutable": true,
-      "Name": "email",
-      "Required": true
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow HTTP",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
      },
      {
-      "Mutable": true,
-      "Name": "name",
-      "Required": true
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow HTTPS",
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
      }
     ],
-    "SmsVerificationMessage": "The verification code to your new account is {####}",
-    "UserPoolName": "relaystack-users",
-    "UsernameAttributes": [
-     "email"
-    ],
-    "VerificationMessageTemplate": {
-     "DefaultEmailOption": "CONFIRM_WITH_CODE",
-     "EmailMessage": "The verification code to your new account is {####}",
-     "EmailSubject": "Verify your new account",
-     "SmsMessage": "The verification code to your new account is {####}"
+    "VpcId": {
+     "Ref": "RelayStackVpcAF1A8530"
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain",
    "Metadata": {
-    "aws:cdk:path": "RelayStackInfra/RelayStackUserPool/Resource"
+    "aws:cdk:path": "RelayStackInfra/AlbSecurityGroup/Resource"
    }
   },
-  "RelayStackUserPoolRelayStackDomain355C91E5": {
-   "Type": "AWS::Cognito::UserPoolDomain",
+  "EcsSecurityGroup44008BF1": {
+   "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "Domain": {
-     "Fn::Join": [
-      "",
-      [
-       "relaystack-",
-       {
-        "Ref": "AWS::AccountId"
-       }
-      ]
+    "GroupDescription": "Security group for ECS Fargate tasks",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "RelayStackVpcAF1A8530"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/EcsSecurityGroup/Resource"
+   }
+  },
+  "EcsSecurityGroupfromRelayStackInfraAlbSecurityGroupE502F7B68080A6E834E5": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Allow traffic from ALB",
+    "FromPort": 8080,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "EcsSecurityGroup44008BF1",
+      "GroupId"
      ]
     },
-    "UserPoolId": {
-     "Ref": "RelayStackUserPool29993727"
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "RelayStackInfra/RelayStackUserPool/RelayStackDomain/Resource"
-   }
-  },
-  "RelayStackUserPoolDashboardClientEF8B72B0": {
-   "Type": "AWS::Cognito::UserPoolClient",
-   "Properties": {
-    "AccessTokenValidity": 60,
-    "AllowedOAuthFlows": [
-     "code"
-    ],
-    "AllowedOAuthFlowsUserPoolClient": true,
-    "AllowedOAuthScopes": [
-     "email",
-     "openid",
-     "profile"
-    ],
-    "CallbackURLs": [
-     "http://localhost:3000/auth/callback",
-     "https://dashboard.relaystack.io/auth/callback"
-    ],
-    "ClientName": "relaystack-dashboard",
-    "ExplicitAuthFlows": [
-     "ALLOW_USER_PASSWORD_AUTH",
-     "ALLOW_USER_SRP_AUTH",
-     "ALLOW_REFRESH_TOKEN_AUTH"
-    ],
-    "GenerateSecret": false,
-    "IdTokenValidity": 60,
-    "LogoutURLs": [
-     "http://localhost:3000",
-     "https://dashboard.relaystack.io"
-    ],
-    "RefreshTokenValidity": 43200,
-    "SupportedIdentityProviders": [
-     "COGNITO"
-    ],
-    "TokenValidityUnits": {
-     "AccessToken": "minutes",
-     "IdToken": "minutes",
-     "RefreshToken": "minutes"
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "AlbSecurityGroup86A59E99",
+      "GroupId"
+     ]
     },
-    "UserPoolId": {
-     "Ref": "RelayStackUserPool29993727"
-    }
+    "ToPort": 8080
    },
    "Metadata": {
-    "aws:cdk:path": "RelayStackInfra/RelayStackUserPool/DashboardClient/Resource"
+    "aws:cdk:path": "RelayStackInfra/EcsSecurityGroup/from RelayStackInfraAlbSecurityGroupE502F7B6:8080"
    }
   },
   "DbSecurityGroupE9D701AD": {
@@ -528,26 +480,36 @@
       "IpProtocol": "-1"
      }
     ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": {
-       "Fn::GetAtt": [
-        "RelayStackVpcAF1A8530",
-        "CidrBlock"
-       ]
-      },
-      "Description": "Allow PostgreSQL from VPC",
-      "FromPort": 5432,
-      "IpProtocol": "tcp",
-      "ToPort": 5432
-     }
-    ],
     "VpcId": {
      "Ref": "RelayStackVpcAF1A8530"
     }
    },
    "Metadata": {
     "aws:cdk:path": "RelayStackInfra/DbSecurityGroup/Resource"
+   }
+  },
+  "DbSecurityGroupfromRelayStackInfraEcsSecurityGroupF8B57748543297C1B8D8": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Allow PostgreSQL from ECS",
+    "FromPort": 5432,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "DbSecurityGroupE9D701AD",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "EcsSecurityGroup44008BF1",
+      "GroupId"
+     ]
+    },
+    "ToPort": 5432
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/DbSecurityGroup/from RelayStackInfraEcsSecurityGroupF8B57748:5432"
    }
   },
   "DbCredentials798065DE": {
@@ -659,331 +621,623 @@
     "aws:cdk:path": "RelayStackInfra/RelayStackDb/Resource"
    }
   },
-  "RedisSecurityGroupB05951F6": {
-   "Type": "AWS::EC2::SecurityGroup",
+  "JwtSecretB8834B39": {
+   "Type": "AWS::SecretsManager::Secret",
    "Properties": {
-    "GroupDescription": "Security group for ElastiCache Redis",
-    "SecurityGroupEgress": [
+    "Description": "JWT signing secret for RelayStack auth",
+    "GenerateSecretString": {
+     "ExcludePunctuation": true,
+     "PasswordLength": 64
+    },
+    "Name": "relaystack/jwt-secret"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/JwtSecret/Resource"
+   }
+  },
+  "GatewayRepo5C3BAF10": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "EmptyOnDelete": true,
+    "ImageScanningConfiguration": {
+     "ScanOnPush": true
+    },
+    "LifecyclePolicy": {
+     "LifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Keep only 10 images\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":10},\"action\":{\"type\":\"expire\"}}]}"
+    },
+    "RepositoryName": "relaystack-gateway"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/GatewayRepo/Resource"
+   }
+  },
+  "RelayStackClusterFBC07A44": {
+   "Type": "AWS::ECS::Cluster",
+   "Properties": {
+    "ClusterName": "relaystack-cluster"
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackCluster/Resource"
+   }
+  },
+  "RelayStackAlb4C4FE321": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "LoadBalancerAttributes": [
      {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
      }
     ],
-    "SecurityGroupIngress": [
+    "Name": "relaystack-alb",
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
      {
-      "CidrIp": {
-       "Fn::GetAtt": [
-        "RelayStackVpcAF1A8530",
-        "CidrBlock"
-       ]
+      "Fn::GetAtt": [
+       "AlbSecurityGroup86A59E99",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "RelayStackVpcPublicSubnet1Subnet1CDFA9A9"
+     },
+     {
+      "Ref": "RelayStackVpcPublicSubnet2Subnet0437F672"
+     }
+    ],
+    "Type": "application"
+   },
+   "DependsOn": [
+    "RelayStackVpcPublicSubnet1DefaultRoute608182DC",
+    "RelayStackVpcPublicSubnet1RouteTableAssociationEB78FE7B",
+    "RelayStackVpcPublicSubnet2DefaultRoute2D339023",
+    "RelayStackVpcPublicSubnet2RouteTableAssociation8727E217"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackAlb/Resource"
+   }
+  },
+  "RelayStackAlbHttpListenerF8CD664D": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "RelayStackAlbHttpListenerGatewayTargetGroupC7C211B4"
       },
-      "Description": "Allow Redis from VPC",
-      "FromPort": 6379,
-      "IpProtocol": "tcp",
-      "ToPort": 6379
+      "Type": "forward"
      }
     ],
+    "LoadBalancerArn": {
+     "Ref": "RelayStackAlb4C4FE321"
+    },
+    "Port": 80,
+    "Protocol": "HTTP"
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/RelayStackAlb/HttpListener/Resource"
+   }
+  },
+  "RelayStackAlbHttpListenerGatewayTargetGroupC7C211B4": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "HealthCheckIntervalSeconds": 30,
+    "HealthCheckPath": "/health",
+    "HealthCheckTimeoutSeconds": 5,
+    "HealthyThresholdCount": 2,
+    "Port": 8080,
+    "Protocol": "HTTP",
+    "TargetGroupAttributes": [
+     {
+      "Key": "stickiness.enabled",
+      "Value": "false"
+     }
+    ],
+    "TargetType": "ip",
+    "UnhealthyThresholdCount": 3,
     "VpcId": {
      "Ref": "RelayStackVpcAF1A8530"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "RelayStackInfra/RedisSecurityGroup/Resource"
+    "aws:cdk:path": "RelayStackInfra/RelayStackAlb/HttpListener/GatewayTargetGroup/Resource"
    }
   },
-  "RedisSubnetGroup": {
-   "Type": "AWS::ElastiCache::SubnetGroup",
+  "GatewayTaskDefTaskRoleDCA38114": {
+   "Type": "AWS::IAM::Role",
    "Properties": {
-    "CacheSubnetGroupName": "relaystack-redis-subnet",
-    "Description": "Subnet group for RelayStack Redis",
-    "SubnetIds": [
-     {
-      "Ref": "RelayStackVpcPrivateSubnet1SubnetD37DA11D"
-     },
-     {
-      "Ref": "RelayStackVpcPrivateSubnet2Subnet943561E3"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "RelayStackInfra/RedisSubnetGroup"
-   }
-  },
-  "RelayStackRedis": {
-   "Type": "AWS::ElastiCache::CacheCluster",
-   "Properties": {
-    "AutoMinorVersionUpgrade": true,
-    "CacheNodeType": "cache.t3.micro",
-    "CacheSubnetGroupName": "relaystack-redis-subnet",
-    "ClusterName": "relaystack-redis",
-    "Engine": "redis",
-    "EngineVersion": "7.0",
-    "NumCacheNodes": 1,
-    "Port": 6379,
-    "VpcSecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "RedisSecurityGroupB05951F6",
-       "GroupId"
-      ]
-     }
-    ]
-   },
-   "DependsOn": [
-    "RedisSubnetGroup"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "RelayStackInfra/RelayStackRedis"
-   }
-  },
-  "LogsBucket9C4D8843": {
-   "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "BucketEncryption": {
-     "ServerSideEncryptionConfiguration": [
-      {
-       "ServerSideEncryptionByDefault": {
-        "SSEAlgorithm": "AES256"
-       }
-      }
-     ]
-    },
-    "BucketName": {
-     "Fn::Join": [
-      "",
-      [
-       "relaystack-logs-",
-       {
-        "Ref": "AWS::AccountId"
-       }
-      ]
-     ]
-    },
-    "LifecycleConfiguration": {
-     "Rules": [
-      {
-       "ExpirationInDays": 365,
-       "Id": "DeleteOldLogs",
-       "Status": "Enabled",
-       "Transitions": [
-        {
-         "StorageClass": "INTELLIGENT_TIERING",
-         "TransitionInDays": 30
-        }
-       ]
-      }
-     ]
-    },
-    "PublicAccessBlockConfiguration": {
-     "BlockPublicAcls": true,
-     "BlockPublicPolicy": true,
-     "IgnorePublicAcls": true,
-     "RestrictPublicBuckets": true
-    }
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain",
-   "Metadata": {
-    "aws:cdk:path": "RelayStackInfra/LogsBucket/Resource"
-   }
-  },
-  "ExportsBucket5A12738B": {
-   "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "BucketEncryption": {
-     "ServerSideEncryptionConfiguration": [
-      {
-       "ServerSideEncryptionByDefault": {
-        "SSEAlgorithm": "AES256"
-       }
-      }
-     ]
-    },
-    "BucketName": {
-     "Fn::Join": [
-      "",
-      [
-       "relaystack-exports-",
-       {
-        "Ref": "AWS::AccountId"
-       }
-      ]
-     ]
-    },
-    "LifecycleConfiguration": {
-     "Rules": [
-      {
-       "ExpirationInDays": 7,
-       "Id": "DeleteOldExports",
-       "Status": "Enabled"
-      }
-     ]
-    },
-    "PublicAccessBlockConfiguration": {
-     "BlockPublicAcls": true,
-     "BlockPublicPolicy": true,
-     "IgnorePublicAcls": true,
-     "RestrictPublicBuckets": true
-    },
-    "Tags": [
-     {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
-   "Metadata": {
-    "aws:cdk:path": "RelayStackInfra/ExportsBucket/Resource"
-   }
-  },
-  "ExportsBucketPolicyF65C412E": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "ExportsBucket5A12738B"
-    },
-    "PolicyDocument": {
+    "AssumeRolePolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "s3:PutBucketPolicy",
-        "s3:GetBucket*",
-        "s3:List*",
-        "s3:DeleteObject*"
-       ],
+       "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "ExportsBucket5A12738B",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "ExportsBucket5A12738B",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
+        "Service": "ecs-tasks.amazonaws.com"
+       }
       }
      ],
      "Version": "2012-10-17"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "RelayStackInfra/ExportsBucket/Policy/Resource"
+    "aws:cdk:path": "RelayStackInfra/GatewayTaskDef/TaskRole/Resource"
    }
   },
-  "ExportsBucketAutoDeleteObjectsCustomResource12EF524C": {
-   "Type": "Custom::S3AutoDeleteObjects",
+  "GatewayTaskDefTaskRoleDefaultPolicy68852739": {
+   "Type": "AWS::IAM::Policy",
    "Properties": {
-    "ServiceToken": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "DbCredentials798065DE"
+       }
+      },
+      {
+       "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "JwtSecretB8834B39"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GatewayTaskDefTaskRoleDefaultPolicy68852739",
+    "Roles": [
+     {
+      "Ref": "GatewayTaskDefTaskRoleDCA38114"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/GatewayTaskDef/TaskRole/DefaultPolicy/Resource"
+   }
+  },
+  "GatewayTaskDef527EC7C6": {
+   "Type": "AWS::ECS::TaskDefinition",
+   "Properties": {
+    "ContainerDefinitions": [
+     {
+      "Environment": [
+       {
+        "Name": "NODE_ENV",
+        "Value": "production"
+       },
+       {
+        "Name": "PORT",
+        "Value": "8080"
+       },
+       {
+        "Name": "AWS_REGION",
+        "Value": {
+         "Ref": "AWS::Region"
+        }
+       },
+       {
+        "Name": "DB_HOST",
+        "Value": {
+         "Fn::GetAtt": [
+          "RelayStackDb1FC49FBE",
+          "Endpoint.Address"
+         ]
+        }
+       },
+       {
+        "Name": "DB_PORT",
+        "Value": {
+         "Fn::GetAtt": [
+          "RelayStackDb1FC49FBE",
+          "Endpoint.Port"
+         ]
+        }
+       },
+       {
+        "Name": "DB_NAME",
+        "Value": "relaystack"
+       }
+      ],
+      "Essential": true,
+      "HealthCheck": {
+       "Command": [
+        "CMD-SHELL",
+        "curl -f http://localhost:8080/health || exit 1"
+       ],
+       "Interval": 30,
+       "Retries": 3,
+       "StartPeriod": 60,
+       "Timeout": 5
+      },
+      "Image": {
+       "Fn::Join": [
+        "",
+        [
+         {
+          "Fn::Select": [
+           4,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "GatewayRepo5C3BAF10",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         ".dkr.ecr.",
+         {
+          "Fn::Select": [
+           3,
+           {
+            "Fn::Split": [
+             ":",
+             {
+              "Fn::GetAtt": [
+               "GatewayRepo5C3BAF10",
+               "Arn"
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         ".",
+         {
+          "Ref": "AWS::URLSuffix"
+         },
+         "/",
+         {
+          "Ref": "GatewayRepo5C3BAF10"
+         },
+         ":20260205212731"
+        ]
+       ]
+      },
+      "LogConfiguration": {
+       "LogDriver": "awslogs",
+       "Options": {
+        "awslogs-group": {
+         "Ref": "GatewayTaskDefGatewayContainerLogGroup93388743"
+        },
+        "awslogs-stream-prefix": "gateway",
+        "awslogs-region": "us-east-2"
+       }
+      },
+      "Name": "GatewayContainer",
+      "PortMappings": [
+       {
+        "ContainerPort": 8080,
+        "Protocol": "tcp"
+       }
+      ],
+      "Secrets": [
+       {
+        "Name": "DB_USERNAME",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "DbCredentials798065DE"
+           },
+           ":username::"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "DB_PASSWORD",
+        "ValueFrom": {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Ref": "DbCredentials798065DE"
+           },
+           ":password::"
+          ]
+         ]
+        }
+       },
+       {
+        "Name": "JWT_SECRET",
+        "ValueFrom": {
+         "Ref": "JwtSecretB8834B39"
+        }
+       }
+      ]
+     }
+    ],
+    "Cpu": "512",
+    "ExecutionRoleArn": {
      "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "GatewayTaskDefExecutionRoleBF9BD2B7",
       "Arn"
      ]
     },
-    "BucketName": {
-     "Ref": "ExportsBucket5A12738B"
+    "Family": "RelayStackInfraGatewayTaskDef90A75AD0",
+    "Memory": "1024",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
+     "Fn::GetAtt": [
+      "GatewayTaskDefTaskRoleDCA38114",
+      "Arn"
+     ]
     }
    },
-   "DependsOn": [
-    "ExportsBucketPolicyF65C412E"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete",
    "Metadata": {
-    "aws:cdk:path": "RelayStackInfra/ExportsBucket/AutoDeleteObjectsCustomResource/Default"
+    "aws:cdk:path": "RelayStackInfra/GatewayTaskDef/Resource"
    }
   },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+  "GatewayTaskDefGatewayContainerLogGroup93388743": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 7
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/GatewayTaskDef/GatewayContainer/LogGroup/Resource"
+   }
+  },
+  "GatewayTaskDefExecutionRoleBF9BD2B7": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
      "Statement": [
       {
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "lambda.amazonaws.com"
+        "Service": "ecs-tasks.amazonaws.com"
        }
       }
-     ]
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/GatewayTaskDef/ExecutionRole/Resource"
+   }
+  },
+  "GatewayTaskDefExecutionRoleDefaultPolicyBB80EE04": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "GatewayRepo5C3BAF10",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "GatewayTaskDefGatewayContainerLogGroup93388743",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "DbCredentials798065DE"
+       }
+      },
+      {
+       "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "JwtSecretB8834B39"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
     },
-    "ManagedPolicyArns": [
+    "PolicyName": "GatewayTaskDefExecutionRoleDefaultPolicyBB80EE04",
+    "Roles": [
      {
-      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+      "Ref": "GatewayTaskDefExecutionRoleBF9BD2B7"
      }
     ]
    },
    "Metadata": {
-    "aws:cdk:path": "RelayStackInfra/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role"
+    "aws:cdk:path": "RelayStackInfra/GatewayTaskDef/ExecutionRole/DefaultPolicy/Resource"
    }
   },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
-   "Type": "AWS::Lambda::Function",
+  "GatewayService20F4B805": {
+   "Type": "AWS::ECS::Service",
    "Properties": {
-    "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-456735831533-us-east-2",
-     "S3Key": "faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6.zip"
+    "Cluster": {
+     "Ref": "RelayStackClusterFBC07A44"
     },
-    "Timeout": 900,
-    "MemorySize": 128,
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-      "Arn"
-     ]
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
+     "DeploymentCircuitBreaker": {
+      "Enable": true,
+      "Rollback": true
+     },
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 0
     },
-    "Runtime": "nodejs22.x",
-    "Description": {
-     "Fn::Join": [
-      "",
-      [
-       "Lambda function for auto-deleting objects in ",
+    "DeploymentController": {
+     "Type": "ECS"
+    },
+    "DesiredCount": 1,
+    "EnableECSManagedTags": false,
+    "HealthCheckGracePeriodSeconds": 60,
+    "LaunchType": "FARGATE",
+    "LoadBalancers": [
+     {
+      "ContainerName": "GatewayContainer",
+      "ContainerPort": 8080,
+      "TargetGroupArn": {
+       "Ref": "RelayStackAlbHttpListenerGatewayTargetGroupC7C211B4"
+      }
+     }
+    ],
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
        {
-        "Ref": "ExportsBucket5A12738B"
+        "Fn::GetAtt": [
+         "EcsSecurityGroup44008BF1",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "RelayStackVpcPrivateSubnet1SubnetD37DA11D"
        },
-       " S3 bucket."
+       {
+        "Ref": "RelayStackVpcPrivateSubnet2Subnet943561E3"
+       }
       ]
-     ]
+     }
+    },
+    "ServiceName": "relaystack-gateway",
+    "TaskDefinition": {
+     "Ref": "GatewayTaskDef527EC7C6"
     }
    },
    "DependsOn": [
-    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    "GatewayTaskDefTaskRoleDefaultPolicy68852739",
+    "GatewayTaskDefTaskRoleDCA38114",
+    "RelayStackAlbHttpListenerGatewayTargetGroupC7C211B4",
+    "RelayStackAlbHttpListenerF8CD664D"
    ],
    "Metadata": {
-    "aws:cdk:path": "RelayStackInfra/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
-    "aws:asset:path": "asset.faa95a81ae7d7373f3e1f242268f904eb748d8d0fdd306e8a6fe515a1905a7d6",
-    "aws:asset:property": "Code"
+    "aws:cdk:path": "RelayStackInfra/GatewayService/Service"
+   }
+  },
+  "GatewayServiceTaskCountTarget66688692": {
+   "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
+   "Properties": {
+    "MaxCapacity": 10,
+    "MinCapacity": 1,
+    "ResourceId": {
+     "Fn::Join": [
+      "",
+      [
+       "service/",
+       {
+        "Ref": "RelayStackClusterFBC07A44"
+       },
+       "/",
+       {
+        "Fn::GetAtt": [
+         "GatewayService20F4B805",
+         "Name"
+        ]
+       }
+      ]
+     ]
+    },
+    "RoleARN": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":iam::456735831533:role/aws-service-role/ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
+      ]
+     ]
+    },
+    "ScalableDimension": "ecs:service:DesiredCount",
+    "ServiceNamespace": "ecs"
+   },
+   "DependsOn": [
+    "GatewayTaskDefTaskRoleDefaultPolicy68852739",
+    "GatewayTaskDefTaskRoleDCA38114"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/GatewayService/TaskCount/Target/Resource"
+   }
+  },
+  "GatewayServiceTaskCountTargetCpuScalingB9A89832": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "RelayStackInfraGatewayServiceTaskCountTargetCpuScalingE70E214E",
+    "PolicyType": "TargetTrackingScaling",
+    "ScalingTargetId": {
+     "Ref": "GatewayServiceTaskCountTarget66688692"
+    },
+    "TargetTrackingScalingPolicyConfiguration": {
+     "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
+     },
+     "ScaleInCooldown": 60,
+     "ScaleOutCooldown": 60,
+     "TargetValue": 70
+    }
+   },
+   "DependsOn": [
+    "GatewayTaskDefTaskRoleDefaultPolicy68852739",
+    "GatewayTaskDefTaskRoleDCA38114"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "RelayStackInfra/GatewayService/TaskCount/Target/CpuScaling/Resource"
    }
   },
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/3VRXW+CMBT9LXuv3cQle1ZcjC8bEefrcilXrJbW9N5qDOG/LwgC2bKne77anraRjGZvcvoEV5qo/DQxOpNVyqBOAq70XaGKZLU7KxHv7S6JRRIyo1UaMovcaAPauMC4hczgoA/anMgpDayd7cMNeF8nzfgAXgHjFW4i8foCjMPGa8voLfaBtknH5sygDiVaFimq4DXfVt6F873DWKiFcoXV7GT1RegT50yT6fEDLF0J2o6tTnnQ2OjmtFGgVWpBqDwylWChQC+r9M67Jg1qxxZ8gTwq3gd+O7XwOclqCQwZEK4tMViFon2b/p7LxR/hEa0FGiDWCtQBZdV/TB+NGyM2gRh9LWgmq0VQp7Z1h9qROKPVbZBbXtdig+SCVyjiQOzKge7tP1bi3UXn6BdAKOZEyClDoW3RrPkMfA5cC+tylEd6vkSvcjqTL09H0nrig2Vdoty08wfun7QzvgIAAA=="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/31SwW7bMAz9lt4VbU0H7JwmWxGg2II46HWgFdZjo0iGSCUoBP/7ICuxnRbYiY+PTyL5pLmeP3zX93dw5pnZH2aWap0qAXNQcOY/Cc1cp5fWqOWre9ks1SbWlkwVa4eSuRFtfRTcQW1x5EduwewNgZB3gziDH+tNDr9AnkDwDO9qE+gEguPFaycYHA6CMsklW4iA+XtEJ6pCEwPJ+1Pwse1n+C+xdk1A5k4xmoDCR3DQYNCp6vOLPqMSdhAalEm/QfCx0qmwZ51WIFAD49qxgDOoykrDNKvHT8RV2ik0Qacttp5JfOiXHrNcZp2WNrJgyLUr/AmhgWw5H1b4So6uhn9kvBMgh2HCXc5WGE5kyiNeYGXA5kfMlyx9zBuiBRYy1sO+BgvOkGtOc50WbWvJ9O/87GH/2NfKjDf5VEcs6C6aK57Ui72DS5O0UwRHnba+/Lk+brwl0/tVUKesb1inZ98MV1xxp2BsA1E8G7DkGp3GjXOz3otbpoRdAHMg11Tl3Nj7hug6tUX2MRRXf0dpo3TK+T3qN/5ymn/T9w/6690bE81CdEJH1NsS/wGwRG1coAMAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "RelayStackInfra/CDKMetadata/Default"
@@ -991,44 +1245,99 @@
   }
  },
  "Outputs": {
-  "UserPoolId": {
-   "Description": "Cognito User Pool ID",
+  "VpcId": {
+   "Description": "VPC ID",
    "Value": {
-    "Ref": "RelayStackUserPool29993727"
+    "Ref": "RelayStackVpcAF1A8530"
    },
    "Export": {
-    "Name": "RelayStackUserPoolId"
+    "Name": "RelayStackVpcId"
    }
   },
-  "UserPoolClientId": {
-   "Description": "Cognito User Pool Client ID",
+  "AlbDnsName": {
+   "Description": "Application Load Balancer DNS Name",
    "Value": {
-    "Ref": "RelayStackUserPoolDashboardClientEF8B72B0"
+    "Fn::GetAtt": [
+     "RelayStackAlb4C4FE321",
+     "DNSName"
+    ]
    },
    "Export": {
-    "Name": "RelayStackUserPoolClientId"
+    "Name": "RelayStackAlbDns"
    }
   },
-  "CognitoDomain": {
-   "Description": "Cognito Hosted UI Domain",
+  "AlbUrl": {
+   "Description": "Gateway API URL",
    "Value": {
     "Fn::Join": [
      "",
      [
-      "https://",
+      "http://",
       {
-       "Ref": "RelayStackUserPoolRelayStackDomain355C91E5"
-      },
-      ".auth.",
-      {
-       "Ref": "AWS::Region"
-      },
-      ".amazoncognito.com"
+       "Fn::GetAtt": [
+        "RelayStackAlb4C4FE321",
+        "DNSName"
+       ]
+      }
      ]
     ]
    },
    "Export": {
-    "Name": "RelayStackCognitoDomain"
+    "Name": "RelayStackGatewayUrl"
+   }
+  },
+  "EcrRepositoryUri": {
+   "Description": "ECR Repository URI",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      {
+       "Fn::Select": [
+        4,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "GatewayRepo5C3BAF10",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".dkr.ecr.",
+      {
+       "Fn::Select": [
+        3,
+        {
+         "Fn::Split": [
+          ":",
+          {
+           "Fn::GetAtt": [
+            "GatewayRepo5C3BAF10",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "GatewayRepo5C3BAF10"
+      }
+     ]
+    ]
+   },
+   "Export": {
+    "Name": "RelayStackEcrUri"
    }
   },
   "RdsEndpoint": {
@@ -1052,43 +1361,62 @@
     "Name": "RelayStackRdsSecretArn"
    }
   },
-  "RedisEndpoint": {
-   "Description": "ElastiCache Redis Endpoint",
+  "JwtSecretArn": {
+   "Description": "JWT Secret ARN",
+   "Value": {
+    "Ref": "JwtSecretB8834B39"
+   },
+   "Export": {
+    "Name": "RelayStackJwtSecretArn"
+   }
+  },
+  "ClusterName": {
+   "Description": "ECS Cluster Name",
+   "Value": {
+    "Ref": "RelayStackClusterFBC07A44"
+   },
+   "Export": {
+    "Name": "RelayStackClusterName"
+   }
+  },
+  "ServiceName": {
+   "Description": "ECS Service Name",
    "Value": {
     "Fn::GetAtt": [
-     "RelayStackRedis",
-     "RedisEndpoint.Address"
+     "GatewayService20F4B805",
+     "Name"
     ]
    },
    "Export": {
-    "Name": "RelayStackRedisEndpoint"
+    "Name": "RelayStackServiceName"
    }
   },
-  "LogsBucketName": {
-   "Description": "S3 Logs Bucket Name",
+  "DatabaseUrl": {
+   "Description": "Database URL template (replace with actual credentials)",
    "Value": {
-    "Ref": "LogsBucket9C4D8843"
+    "Fn::Join": [
+     "",
+     [
+      "postgresql://${DB_USERNAME}:${DB_PASSWORD}@",
+      {
+       "Fn::GetAtt": [
+        "RelayStackDb1FC49FBE",
+        "Endpoint.Address"
+       ]
+      },
+      ":",
+      {
+       "Fn::GetAtt": [
+        "RelayStackDb1FC49FBE",
+        "Endpoint.Port"
+       ]
+      },
+      "/relaystack"
+     ]
+    ]
    },
    "Export": {
-    "Name": "RelayStackLogsBucket"
-   }
-  },
-  "ExportsBucketName": {
-   "Description": "S3 Exports Bucket Name",
-   "Value": {
-    "Ref": "ExportsBucket5A12738B"
-   },
-   "Export": {
-    "Name": "RelayStackExportsBucket"
-   }
-  },
-  "VpcId": {
-   "Description": "VPC ID",
-   "Value": {
-    "Ref": "RelayStackVpcAF1A8530"
-   },
-   "Export": {
-    "Name": "RelayStackVpcId"
+    "Name": "RelayStackDatabaseUrlTemplate"
    }
   }
  },

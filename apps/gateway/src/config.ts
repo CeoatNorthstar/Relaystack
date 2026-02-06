@@ -1,5 +1,25 @@
 import "dotenv/config";
 
+// Build DATABASE_URL from individual parts if not provided directly
+function getDatabaseUrl(): string {
+  if (process.env.DATABASE_URL) {
+    return process.env.DATABASE_URL;
+  }
+  
+  // Build from parts (for ECS with Secrets Manager)
+  const host = process.env.DB_HOST;
+  const port = process.env.DB_PORT || "5432";
+  const name = process.env.DB_NAME || "relaystack";
+  const user = process.env.DB_USERNAME;
+  const pass = process.env.DB_PASSWORD;
+  
+  if (host && user && pass) {
+    return `postgresql://${user}:${pass}@${host}:${port}/${name}`;
+  }
+  
+  return "postgresql://postgres:postgres@localhost:5432/relaystack";
+}
+
 export const config = {
   port: parseInt(process.env.PORT || "8080", 10),
   nodeEnv: process.env.NODE_ENV || "development",
@@ -8,7 +28,7 @@ export const config = {
   useAws: process.env.USE_AWS === "true",
   
   database: {
-    url: process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/relaystack",
+    url: getDatabaseUrl(),
   },
   
   redis: {

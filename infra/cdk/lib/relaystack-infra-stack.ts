@@ -141,7 +141,6 @@ export class RelayStackInfraStack extends cdk.Stack {
     this.ecsCluster = new ecs.Cluster(this, "RelayStackCluster", {
       vpc: this.vpc,
       clusterName: "relaystack-cluster",
-      containerInsights: true,
     });
 
     // ==================== APPLICATION LOAD BALANCER ====================
@@ -164,10 +163,6 @@ export class RelayStackInfraStack extends cdk.Stack {
       {
         memoryLimitMiB: 1024,
         cpu: 512,
-        runtimePlatform: {
-          cpuArchitecture: ecs.CpuArchitecture.ARM64,
-          operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
-        },
       }
     );
 
@@ -175,8 +170,13 @@ export class RelayStackInfraStack extends cdk.Stack {
     dbCredentials.grantRead(taskDefinition.taskRole);
     jwtSecret.grantRead(taskDefinition.taskRole);
 
+    // Build DATABASE_URL from secret components
+    const dbHost = this.rdsInstance.dbInstanceEndpointAddress;
+    const dbPort = this.rdsInstance.dbInstanceEndpointPort;
+    const dbName = "relaystack";
+
     const container = taskDefinition.addContainer("GatewayContainer", {
-      image: ecs.ContainerImage.fromEcrRepository(this.ecrRepository, "latest"),
+      image: ecs.ContainerImage.fromEcrRepository(this.ecrRepository, "20260205212731"),
       logging: ecs.LogDrivers.awsLogs({
         streamPrefix: "gateway",
         logRetention: logs.RetentionDays.ONE_WEEK,
@@ -185,11 +185,21 @@ export class RelayStackInfraStack extends cdk.Stack {
         NODE_ENV: "production",
         PORT: "8080",
         AWS_REGION: cdk.Aws.REGION,
+        DB_HOST: dbHost,
+        DB_PORT: dbPort,
+        DB_NAME: dbName,
       },
       secrets: {
-        DATABASE_URL: ecs.Secret.fromSecretsManager(dbCredentials),
+        DB_USERNAME: ecs.Secret.fromSecretsManager(dbCredentials, "username"),
+        DB_PASSWORD: ecs.Secret.fromSecretsManager(dbCredentials, "password"),
         JWT_SECRET: ecs.Secret.fromSecretsManager(jwtSecret),
       },
+      portMappings: [
+        {
+          containerPort: 8080,
+          protocol: ecs.Protocol.TCP,
+        },
+      ],
       healthCheck: {
         command: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"],
         interval: cdk.Duration.seconds(30),
@@ -197,11 +207,6 @@ export class RelayStackInfraStack extends cdk.Stack {
         retries: 3,
         startPeriod: cdk.Duration.seconds(60),
       },
-    });
-
-    container.addPortMappings({
-      containerPort: 8080,
-      protocol: ecs.Protocol.TCP,
     });
 
     // ==================== ECS SERVICE ====================
@@ -218,6 +223,8 @@ export class RelayStackInfraStack extends cdk.Stack {
       circuitBreaker: {
         rollback: true,
       },
+      minHealthyPercent: 0,
+      maxHealthyPercent: 200,
     });
 
     // ==================== AUTO SCALING ====================
@@ -227,12 +234,6 @@ export class RelayStackInfraStack extends cdk.Stack {
     });
 
     scaling.scaleOnCpuUtilization("CpuScaling", {
-      targetUtilizationPercent: 70,
-      scaleInCooldown: cdk.Duration.seconds(60),
-      scaleOutCooldown: cdk.Duration.seconds(60),
-    });
-
-    scaling.scaleOnMemoryUtilization("MemoryScaling", {
       targetUtilizationPercent: 70,
       scaleInCooldown: cdk.Duration.seconds(60),
       scaleOutCooldown: cdk.Duration.seconds(60),
@@ -305,6 +306,12 @@ export class RelayStackInfraStack extends cdk.Stack {
       value: service.serviceName,
       description: "ECS Service Name",
       exportName: "RelayStackServiceName",
+    });
+
+    new cdk.CfnOutput(this, "DatabaseUrl", {
+      value: `postgresql://\${DB_USERNAME}:\${DB_PASSWORD}@${dbHost}:${dbPort}/${dbName}`,
+      description: "Database URL template (replace with actual credentials)",
+      exportName: "RelayStackDatabaseUrlTemplate",
     });
   }
 }

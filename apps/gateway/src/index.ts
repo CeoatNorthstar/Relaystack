@@ -49,13 +49,22 @@ process.on("SIGINT", shutdown);
 // Start server
 async function start() {
   try {
-    // Connect to Redis
-    await connectRedis();
-    console.log("✓ Connected to Redis");
+    // Connect to Redis (optional - skip if not configured)
+    if (config.redis.url && config.redis.url !== "redis://localhost:6379") {
+      try {
+        await connectRedis();
+        console.log("✓ Connected to Redis");
+      } catch (redisErr) {
+        console.warn("⚠ Redis not available, using Cloudflare KV for rate limiting");
+      }
+    } else {
+      console.log("⚠ Redis not configured, using Cloudflare KV for rate limiting");
+    }
 
     // Test database connection
     await db.$connect();
     console.log("✓ Connected to PostgreSQL");
+    console.log(`  Database URL: ${config.database.url.replace(/:[^:@]+@/, ':***@')}`);
 
     // Start server
     await app.listen({ port: config.port, host: "0.0.0.0" });

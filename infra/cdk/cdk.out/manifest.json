@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::456735831533:role/cdk-hnb659fds-deploy-role-456735831533-us-east-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::456735831533:role/cdk-hnb659fds-cfn-exec-role-456735831533-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-456735831533-us-east-2/87eb55e5411ecc98a06a104e7511d559fb1e4f356f93e44c3fbc0583428def8b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-456735831533-us-east-2/fea547bde075cb7526826114be2f09f526293ff80dc134fd7e7725539b66509b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -160,28 +160,34 @@
             "data": "RelayStackVpcVPCGWFBE42D63"
           }
         ],
-        "/RelayStackInfra/RelayStackUserPool/Resource": [
+        "/RelayStackInfra/AlbSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RelayStackUserPool29993727"
+            "data": "AlbSecurityGroup86A59E99"
           }
         ],
-        "/RelayStackInfra/RelayStackUserPool/RelayStackDomain/Resource": [
+        "/RelayStackInfra/EcsSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RelayStackUserPoolRelayStackDomain355C91E5"
+            "data": "EcsSecurityGroup44008BF1"
           }
         ],
-        "/RelayStackInfra/RelayStackUserPool/DashboardClient/Resource": [
+        "/RelayStackInfra/EcsSecurityGroup/from RelayStackInfraAlbSecurityGroupE502F7B6:8080": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RelayStackUserPoolDashboardClientEF8B72B0"
+            "data": "EcsSecurityGroupfromRelayStackInfraAlbSecurityGroupE502F7B68080A6E834E5"
           }
         ],
         "/RelayStackInfra/DbSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DbSecurityGroupE9D701AD"
+          }
+        ],
+        "/RelayStackInfra/DbSecurityGroup/from RelayStackInfraEcsSecurityGroupF8B57748:5432": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DbSecurityGroupfromRelayStackInfraEcsSecurityGroupF8B57748543297C1B8D8"
           }
         ],
         "/RelayStackInfra/DbCredentials/Resource": [
@@ -208,82 +214,118 @@
             "data": "RelayStackDb1FC49FBE"
           }
         ],
-        "/RelayStackInfra/RedisSecurityGroup/Resource": [
+        "/RelayStackInfra/JwtSecret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RedisSecurityGroupB05951F6"
+            "data": "JwtSecretB8834B39"
           }
         ],
-        "/RelayStackInfra/RedisSubnetGroup": [
+        "/RelayStackInfra/GatewayRepo/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RedisSubnetGroup"
+            "data": "GatewayRepo5C3BAF10"
           }
         ],
-        "/RelayStackInfra/RelayStackRedis": [
+        "/RelayStackInfra/RelayStackCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RelayStackRedis"
+            "data": "RelayStackClusterFBC07A44"
           }
         ],
-        "/RelayStackInfra/LogsBucket/Resource": [
+        "/RelayStackInfra/RelayStackAlb/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LogsBucket9C4D8843"
+            "data": "RelayStackAlb4C4FE321"
           }
         ],
-        "/RelayStackInfra/ExportsBucket/Resource": [
+        "/RelayStackInfra/RelayStackAlb/HttpListener/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsBucket5A12738B"
+            "data": "RelayStackAlbHttpListenerF8CD664D"
           }
         ],
-        "/RelayStackInfra/ExportsBucket/Policy/Resource": [
+        "/RelayStackInfra/RelayStackAlb/HttpListener/GatewayTargetGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsBucketPolicyF65C412E"
+            "data": "RelayStackAlbHttpListenerGatewayTargetGroupC7C211B4"
           }
         ],
-        "/RelayStackInfra/ExportsBucket/AutoDeleteObjectsCustomResource/Default": [
+        "/RelayStackInfra/GatewayTaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsBucketAutoDeleteObjectsCustomResource12EF524C"
+            "data": "GatewayTaskDefTaskRoleDCA38114"
           }
         ],
-        "/RelayStackInfra/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/RelayStackInfra/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+        "/RelayStackInfra/GatewayTaskDef/TaskRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+            "data": "GatewayTaskDefTaskRoleDefaultPolicy68852739"
           }
         ],
-        "/RelayStackInfra/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+        "/RelayStackInfra/GatewayTaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+            "data": "GatewayTaskDef527EC7C6"
           }
         ],
-        "/RelayStackInfra/UserPoolId": [
+        "/RelayStackInfra/GatewayTaskDef/GatewayContainer/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UserPoolId"
+            "data": "GatewayTaskDefGatewayContainerLogGroup93388743"
           }
         ],
-        "/RelayStackInfra/UserPoolClientId": [
+        "/RelayStackInfra/GatewayTaskDef/ExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UserPoolClientId"
+            "data": "GatewayTaskDefExecutionRoleBF9BD2B7"
           }
         ],
-        "/RelayStackInfra/CognitoDomain": [
+        "/RelayStackInfra/GatewayTaskDef/ExecutionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CognitoDomain"
+            "data": "GatewayTaskDefExecutionRoleDefaultPolicyBB80EE04"
+          }
+        ],
+        "/RelayStackInfra/GatewayService/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GatewayService20F4B805"
+          }
+        ],
+        "/RelayStackInfra/GatewayService/TaskCount/Target/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GatewayServiceTaskCountTarget66688692"
+          }
+        ],
+        "/RelayStackInfra/GatewayService/TaskCount/Target/CpuScaling/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GatewayServiceTaskCountTargetCpuScalingB9A89832"
+          }
+        ],
+        "/RelayStackInfra/VpcId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcId"
+          }
+        ],
+        "/RelayStackInfra/AlbDnsName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbDnsName"
+          }
+        ],
+        "/RelayStackInfra/AlbUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbUrl"
+          }
+        ],
+        "/RelayStackInfra/EcrRepositoryUri": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcrRepositoryUri"
           }
         ],
         "/RelayStackInfra/RdsEndpoint": [
@@ -298,28 +340,28 @@
             "data": "RdsSecretArn"
           }
         ],
-        "/RelayStackInfra/RedisEndpoint": [
+        "/RelayStackInfra/JwtSecretArn": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RedisEndpoint"
+            "data": "JwtSecretArn"
           }
         ],
-        "/RelayStackInfra/LogsBucketName": [
+        "/RelayStackInfra/ClusterName": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LogsBucketName"
+            "data": "ClusterName"
           }
         ],
-        "/RelayStackInfra/ExportsBucketName": [
+        "/RelayStackInfra/ServiceName": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsBucketName"
+            "data": "ServiceName"
           }
         ],
-        "/RelayStackInfra/VpcId": [
+        "/RelayStackInfra/DatabaseUrl": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcId"
+            "data": "DatabaseUrl"
           }
         ],
         "/RelayStackInfra/CDKMetadata/Default": [

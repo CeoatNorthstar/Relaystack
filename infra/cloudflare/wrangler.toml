@@ -1,7 +1,4 @@
 # RelayStack Cloudflare Configuration
-# Run: npx wrangler login
-# Then: npx wrangler kv:namespace create "RATE_LIMITS"
-# Then: npx wrangler r2 bucket create relaystack-logs
 
 name = "relaystack"
 compatibility_date = "2024-01-01"
@@ -9,13 +6,9 @@ compatibility_date = "2024-01-01"
 # KV Namespace for rate limiting
 [[kv_namespaces]]
 binding = "RATE_LIMITS"
-id = "" # Fill after: wrangler kv:namespace create "RATE_LIMITS"
+id = "b1e879552e714d6d8888162315987a31"
 
 # R2 Bucket for logs
 [[r2_buckets]]
 binding = "LOGS"
 bucket_name = "relaystack-logs"
-
-# Environment variables (set via wrangler secret)
-# GATEWAY_URL - URL of the ECS Gateway
-# API_TOKEN - Secret token for Cloudflare <-> Gateway communication
