@@ -60,7 +60,7 @@ async function request<T>(
 export interface HealthResponse {
   status: "ok" | "degraded";
   db: "ok" | "error";
-  redis: "ok" | "error";
+  redis: "ok" | "error" | "not_configured";
   timestamp: string;
 }
 

@@ -5,23 +5,17 @@ import { InteractiveDemo } from "@/components/landing/InteractiveDemo";
 import { CodePreview } from "@/components/landing/CodePreview";
 import { Pricing } from "@/components/landing/Pricing";
 import { CTA } from "@/components/landing/CTA";
-import { Navbar } from "@/components/landing/Navbar";
-import { Footer } from "@/components/landing/Footer";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-black">
-      <Navbar />
-      <main>
-        <Hero />
-        <Providers />
-        <Features />
-        <InteractiveDemo />
-        <CodePreview />
-        <Pricing />
-        <CTA />
-      </main>
-      <Footer />
-    </div>
+    <>
+      <Hero />
+      <Providers />
+      <Features />
+      <InteractiveDemo />
+      <CodePreview />
+      <Pricing />
+      <CTA />
+    </>
   );
 }
