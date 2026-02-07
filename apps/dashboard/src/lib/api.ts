@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const API_BASE_URL = process.env.NEXT_PUBLIC_GATEWAY_URL || "http://localhost:8080";
 const API_KEY_COOKIE = "relaystack_api_key";
 
 export function getApiKey(): string | undefined {
