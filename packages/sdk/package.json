@@ -1,6 +1,9 @@
 {
-  "name": "relaystack",
+  "name": "@relaystack/sdk",
   "version": "0.1.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "description": "RelayStack SDK - Unified AI Gateway for OpenAI, Anthropic, Google, and more",
   "author": "RelayStack",
   "license": "MIT",
@@ -21,7 +24,7 @@
     "dev": "tsc --watch",
     "build": "tsc",
     "test": "tsx test/test-sdk.ts",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "pnpm run build"
   },
   "keywords": [
     "ai",

@@ -5,13 +5,13 @@ Unified AI Gateway client for Node.js. Route requests to OpenAI, Anthropic, Goog
 ## Installation
 
 ```bash
-npm install relaystack
+npm install @relaystack/sdk
 ```
 
 ## Quick Start
 
 ```typescript
-import { RelayStack } from "relaystack";
+import { RelayStack } from "@relaystack/sdk";
 
 // Initialize with your RelayStack token
 const relay = new RelayStack({
@@ -96,7 +96,7 @@ await relay.credentials.delete(credentialId);
 ## Error Handling
 
 ```typescript
-import { RelayStack, RelayStackError } from "relaystack";
+import { RelayStack, RelayStackError } from "@relaystack/sdk";
 
 try {
   const response = await relay.chat.completions.create({
@@ -128,7 +128,7 @@ import type {
   ChatCompletionResponse,
   ChatMessage,
   ProviderName,
-} from "relaystack";
+} from "@relaystack/sdk";
 ```
 
 ## License
