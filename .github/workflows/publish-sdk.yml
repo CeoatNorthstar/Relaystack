@@ -46,11 +46,15 @@ jobs:
         with:
           node-version: 20
           registry-url: https://npm.pkg.github.com/
-          scope: "@relaystack"
+          scope: "@${{ github.repository_owner }}"
           cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Set package scope to match repo owner
+        working-directory: packages/sdk
+        run: pnpm pkg set name="@${{ github.repository_owner }}/sdk"
 
       - name: Publish to GitHub Packages
         working-directory: packages/sdk
