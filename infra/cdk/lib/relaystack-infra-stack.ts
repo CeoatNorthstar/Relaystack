@@ -188,6 +188,7 @@ export class RelayStackInfraStack extends cdk.Stack {
         DB_HOST: dbHost,
         DB_PORT: dbPort,
         DB_NAME: dbName,
+        ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS || "*",
       },
       secrets: {
         DB_USERNAME: ecs.Secret.fromSecretsManager(dbCredentials, "username"),
